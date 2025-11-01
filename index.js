@@ -45,6 +45,10 @@ app.get('/', (_req, res) => {
   });
 });
 
+app.get("/health",(req, res)=>{
+  res.status(200).json({message: "Everything is good here 🙌"});
+})
+
 app.use('/api', apiRouter);
 
 app.use((req, res) => {
