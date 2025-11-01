@@ -1,32 +1,27 @@
 const { Schema, model } = require('mongoose');
 const { randomUUID } = require('crypto');
 
-const userSchema = new Schema(
+const groupSchema = new Schema(
   {
     id: {
       type: String,
       default: () => randomUUID(),
+      unique: true,
       index: true,
-      unique: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
     },
     name: {
       type: String,
       required: true,
       trim: true,
     },
-    timezone: {
+    ownerId: {
       type: String,
-      default: 'UTC',
+      required: true,
+      index: true,
     },
-    avatarUrl: {
-      type: String,
+    memberIds: {
+      type: [String],
+      default: [],
     },
     createdAt: {
       type: Date,
@@ -34,21 +29,21 @@ const userSchema = new Schema(
     },
   },
   {
-    collection: 'users',
+    collection: 'groups',
     versionKey: false,
   }
 );
 
-userSchema.set('toJSON', {
-  virtuals: true,
+groupSchema.set('toJSON', {
   transform: (_, doc) => {
-    const { _id, avatarUrl, createdAt, ...rest } = doc;
+    const { _id, createdAt, memberIds, ownerId, ...rest } = doc;
     return {
       ...rest,
-      avatar_url: avatarUrl,
+      owner_id: ownerId,
+      member_ids: memberIds ?? [],
       created_at: createdAt?.toISOString(),
     };
   },
 });
 
-module.exports = model('User', userSchema);
+module.exports = model('Group', groupSchema);
