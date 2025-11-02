@@ -3,7 +3,7 @@ name: CI/CD
 on:
   push:
     branches:
-      - main
+      - test
   pull_request:
     branches: []
 
@@ -33,7 +33,7 @@ jobs:
   Continuous_Deployment:
     runs-on: ubuntu-latest
     needs: Continuous_Integration
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/test'
 
     steps:
       - name: Checkout code
@@ -62,7 +62,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: app-swe
+          ECR_REPOSITORY: app-swe-test
           IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --platform linux/amd64 .
